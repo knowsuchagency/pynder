@@ -34,7 +34,7 @@ class User(object):
 
     @property
     def instagram_username(self):
-        """Return instagram username if found in _data else empty string."""
+        """Return instagram username if found in _data["instagram_username"] else empty string."""
         if self._data.get("instagram"):
             return self._data['instagram']['username']
         return ""
@@ -85,7 +85,7 @@ class User(object):
     @property
     def distance_mi(self):
         """Return distance in miles if self._data["distance_mi"] else 0."""
-        return self._data.get("distance_mi") or 0
+        return self._data.get("distance_mi", 0)
 
     @property
     def age(self):
@@ -138,7 +138,7 @@ class User(object):
                         photos_list.append(p.get("url", None))
         return photos_list
 
-    def dict(self, keys=None):
+    def dict(self, keys=None, additional_keys=None):
         """
         Return a User object as a dictionary based on the wanted keys.
 
@@ -153,25 +153,29 @@ class User(object):
           'mentions_snapchat',
           'bio',
           'photos'
+
+        You can extend the default keys using the additional_keys parameter.
+        i.e. keys.extend(additional_keys)
         """
         keys = keys or ['name',
                        'id',
                        'instagram_username',
                        'instagram_photos',
                        'age',
-                       'distance_km',
+                       'distance_mi', # who uses the metric system? pfft
                        'mentions_kik',
                        'mentions_snapchat',
                        'bio',
                        'photos']
+        keys.extend(additional_keys)
 
         dictionary = {}
         for key in keys:
             value = getattr(self, key, None)
             dictionary[key] = value
 
-        failed = all(e is None for e in dictionary.values())
-        return dictionary if not failed else {}
+        total_failure = all(e is None for e in dictionary.values())
+        return dictionary if not total_failure else {}
 
 
 class Hopeful(User):
