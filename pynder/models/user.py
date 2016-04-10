@@ -1,4 +1,5 @@
 import dateutil.parser
+import re
 from datetime import date
 from .. import constants
 from six import text_type
@@ -14,10 +15,10 @@ class User(object):
 
         SIMPLE_FIELDS = ("name", "bio", "birth_date", "ping_time")
         for f in SIMPLE_FIELDS:
-            setattr(self, f, data[f])
+            setattr(self, f, data.get(f, ''))
 
         self.photos_obj = [p for p in data['photos']]
-        self.birth_date = dateutil.parser.parse(self.birth_date)
+        self.birth_date = dateutil.parser.parse(self.birth_date) if self.birth_date else None
         self.schools = []
         self.jobs = []
         try:
@@ -33,25 +34,38 @@ class User(object):
 
     @property
     def instagram_username(self):
-        if self._data.get("instagram", False):
+        """Return instagram username if found in _data else empty string."""
+        if self._data.get("instagram"):
             return self._data['instagram']['username']
+        return ""
 
     @property
     def instagram_photos(self):
-        if self._data.get("instagram", False):
-            return [p for p in self._data['instagram']['photos']]
+        """Return a list of instagram photo links if _data["instagram"] else empty list."""
+        if self._data.get("instagram"):
+            return [p.get('link') for p in self._data['instagram']['photos']]
+        return []
 
     @property
     def gender(self):
-        return constants.GENDER_MAP[int(self._data['gender'])]
+        """Return gender as a string if _data["gender"] else empty string."""
+        if self._data.get("gender"):
+            return constants.GENDER_MAP[int(self._data['gender'])]
+        return ""
 
     @property
     def common_interests(self):
-        return [p for p in self._data['common_interests']]
+        """Return list of common interests if _data["common_interests"] else empty list."""
+        if self._data.get("common_interests"):
+            return [p for p in self._data['common_interests']]
+        return []
 
     @property
     def common_connections(self):
-        return [p for p in self._data['common_connections']]
+        """Return list of common connections if _data["common_connections"] else empty list."""
+        if self._data.get("common_connections"):
+            return [p for p in self._data['common_connections']]
+        return []
 
     @property
     def thumbnails(self):
@@ -63,10 +77,15 @@ class User(object):
 
     @property
     def distance_km(self):
-        if self._data.get("distance_mi", False) or self._data.get("distance_km", False):
+        if self._data.get("distance_mi") or self._data.get("distance_km"):
             return self._data.get('distance_km', self._data['distance_mi'] * 1.60934)
         else:
             return 0
+
+    @property
+    def distance_mi(self):
+        """Return distance in miles if self._data["distance_mi"] else 0."""
+        return self._data.get("distance_mi") or 0
 
     @property
     def age(self):
@@ -75,11 +94,28 @@ class User(object):
                 ((today.month, today.day) <
                  (self.birth_date.month, self.birth_date.day)))
 
-    def __unicode__(self):
-        return u"{n} ({a})".format(n=self.name, a=self.age)
+    @property
+    def mentions_snapchat(self):
+        """Return True if user refers to snapchat in their bio else False."""
+        p1 = re.compile("snapchat", re.IGNORECASE)
+        p2 = re.compile(r"(?<!\w)SC(?!\w)", re.ASCII)
+        bio = getattr(self, 'bio', False)
+        if bio:
+            return any(bool(p.search(bio)) for p in (p1, p2))
+        return False
+
+    @property
+    def mentions_kik(self):
+        """Return True if user refers to kik in their bio else False."""
+        pattern = re.compile(r"(?<!\w)kik(?!\w)", flags=re.ASCII|re.IGNORECASE)
+        bio = getattr(self, 'bio', False)
+        if bio:
+            return bool(pattern.search(self.bio))
+        return False
+
 
     def __str__(self):
-        return text_type(self).encode('utf-8')
+        return u"{n} ({a})".format(n=self.name, a=self.age)
 
     def __repr__(self):
         return repr(self.name)
@@ -101,6 +137,41 @@ class User(object):
                     if p.get("width", 0) == int(width):
                         photos_list.append(p.get("url", None))
         return photos_list
+
+    def dict(self, keys=None):
+        """
+        Return a User object as a dictionary based on the wanted keys.
+
+        The default keys are as follows:
+          'name',
+          'id',
+          'instagram_username',
+          'instagram_photos',
+          'age',
+          'distance_km',
+          'mentions_kik',
+          'mentions_snapchat',
+          'bio',
+          'photos'
+        """
+        keys = keys or ['name',
+                       'id',
+                       'instagram_username',
+                       'instagram_photos',
+                       'age',
+                       'distance_km',
+                       'mentions_kik',
+                       'mentions_snapchat',
+                       'bio',
+                       'photos']
+
+        dictionary = {}
+        for key in keys:
+            value = getattr(self, key, None)
+            dictionary[key] = value
+
+        failed = all(e is None for e in dictionary.values())
+        return dictionary if not failed else {}
 
 
 class Hopeful(User):
@@ -136,4 +207,4 @@ class Match(object):
         return self._session._api._request('DELETE', '/user/matches/' + self.id)
 
     def __repr__(self):
-        return "<Unnamed match>" if self.user is None else repr(self.user)
+        return repr(self.user)

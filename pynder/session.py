@@ -29,6 +29,12 @@ class Session(object):
         return self._api.ping(latitude, longitude)
 
     def matches(self):
+        """
+        Return a list of Match objects for the user.
+
+        Some of the Matches' user attribute may be None if that person
+        has deleted their profile on Tinder.
+        """
         return [models.Match(m, self) for m in self._api.matches()]
 
     @property
