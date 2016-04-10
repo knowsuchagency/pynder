@@ -99,7 +99,7 @@ class User(object):
         """Return True if user refers to snapchat in their bio else False."""
         p1 = re.compile("snapchat", re.IGNORECASE)
         p2 = re.compile(r"(?<!\w)SC(?!\w)", re.ASCII)
-        bio = getattr(self, 'bio', False)
+        bio = getattr(self, 'bio', '')
         if bio:
             return any(bool(p.search(bio)) for p in (p1, p2))
         return False
@@ -108,9 +108,20 @@ class User(object):
     def mentions_kik(self):
         """Return True if user refers to kik in their bio else False."""
         pattern = re.compile(r"(?<!\w)kik(?!\w)", flags=re.ASCII|re.IGNORECASE)
-        bio = getattr(self, 'bio', False)
+        bio = getattr(self, 'bio', '')
         if bio:
-            return bool(pattern.search(self.bio))
+            return bool(pattern.search(bio))
+        return False
+
+    @property
+    def mentions_instagram(self):
+        """Return true if user refers to instagram in their bio else False."""
+        p1 = re.compile(r"instagram", re.IGNORECASE)
+        p2 = re.compile(r"(?<!\w)insta(?!\w)", flags=re.ASCII|re.IGNORECASE)
+        p3 = re.compile(r"(?<!\w)IG(?!\w)", re.ASCII)
+        bio = getattr(self, 'bio', '')
+        if bio:
+            return any(bool(p.search(bio)) for p in (p1, p2, p3))
         return False
 
 
@@ -140,7 +151,7 @@ class User(object):
 
     def dict(self, keys=None, additional_keys=None):
         """
-        Return a User object as a dictionary based on the wanted keys.
+        Return a User object as a dictionary based on the keys attribute.
 
         The default keys are as follows:
           'name',
@@ -151,6 +162,7 @@ class User(object):
           'distance_km',
           'mentions_kik',
           'mentions_snapchat',
+          'mentions_instagram',
           'bio',
           'photos'
 
@@ -165,6 +177,7 @@ class User(object):
                        'distance_mi', # who uses the metric system? pfft
                        'mentions_kik',
                        'mentions_snapchat',
+                       'mentions_instagram',
                        'bio',
                        'photos']
         additional_keys = additional_keys or []
