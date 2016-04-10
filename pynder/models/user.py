@@ -167,6 +167,7 @@ class User(object):
                        'mentions_snapchat',
                        'bio',
                        'photos']
+        additional_keys = additional_keys or []
         keys.extend(additional_keys)
 
         dictionary = {}
