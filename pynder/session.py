@@ -28,14 +28,20 @@ class Session(object):
     def update_location(self, latitude, longitude):
         return self._api.ping(latitude, longitude)
 
-    def matches(self):
+    def matches(self, filter_empty_matches=False):
         """
         Return a list of Match objects for the user.
 
         Some of the Matches' user attribute may be None if that person
         has deleted their profile on Tinder.
+
+        You can filter out those matches by setting the filter_empty_matches
+        attribute to True.
         """
-        return [models.Match(m, self) for m in self._api.matches()]
+        matches = [models.Match(m, self) for m in self._api.matches()]
+        if filter_empty_matches:
+            return list(filter(lambda x: x.user, matches))
+        return matches
 
     @property
     def likes_remaining(self):
