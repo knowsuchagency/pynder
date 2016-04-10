@@ -8,7 +8,7 @@ Please see the examples for more information on how to use.
 You start by instantiating a pynder.Session object with a Facebook ID and
 Facebook access token.
 
-You can get a temporary access token by going to `this <https://www.facebook.com/dialog/oauth?client_id=464891386855067&redirect_uri=https://www.facebook.com/connect/login_success.html&scope=basic_info,email,public_profile,user_about_me,user_activities,user_birthday,user_education_history,user_friends,user_interests,user_likes,user_location,user_photos,user_relationship_details&response_type=token>`_ url and retrieving the token from the location header in the response. You can use the packet sniffer in Chrome devtools to do this. A longer-lasting token can be obtained by using `Charles <https://www.charlesproxy.com/>`_ as explained in `this <http://www.joelotter.com/2015/05/17/dj-khaled-tinder-bot.html>`_ helpful and hilarious article.
+You can get a temporary access token by going `HERE <https://www.facebook.com/dialog/oauth?client_id=464891386855067&redirect_uri=https://www.facebook.com/connect/login_success.html&scope=basic_info,email,public_profile,user_about_me,user_activities,user_birthday,user_education_history,user_friends,user_interests,user_likes,user_location,user_photos,user_relationship_details&response_type=token>`_ url and retrieving the token from the location header in the response. You can use the packet sniffer in Chrome devtools to do this. A longer-lasting token can be obtained by using `Charles <https://www.charlesproxy.com/>`_ as explained in this `article on how to create a DJ Khaled tinder bot <http://www.joelotter.com/2015/05/17/dj-khaled-tinder-bot.html>`_.
 
 
 
@@ -44,10 +44,12 @@ These have the following properties: ::
 
 You may run `user.like()`, `user.superlike()` or `user.dislike()` on that user.
 
-For your list of matches, they will have the same attributes as above except
+For your list of matches, they will have a .user attribute with the same attributes as above except
 you can't dislike or like them. You can, however, see any messages exchanged
 (`match.messages`) or send them a message yourself 
 (`match.message("Eyyyy gurl")`).
+
+One important thing to note is that every time you run the nearby_users function, you will exhaust those users as potential matches. You may want to persist those hopefuls to a database like MongoDB or SQLite if you want to be able to like or dislike them at a later time.
 
 Please let me know if you have any questions or bug reports.
 
