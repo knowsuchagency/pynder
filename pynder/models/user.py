@@ -62,9 +62,9 @@ class User(object):
 
     @property
     def common_connections(self):
-        """Return list of common connections if _data["common_connections"] else empty list."""
-        if self._data.get("common_connections"):
-            return [p for p in self._data['common_connections']]
+        """Return list of common friends if _data["common_friends"] else empty list."""
+        if self._data.get("common_friends"):
+            return [p for p in self._data['common_friends']]
         return []
 
     @property
