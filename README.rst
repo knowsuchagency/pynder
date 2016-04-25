@@ -22,7 +22,7 @@ Once your session is initialized you have the following methods / attributes:
     session.profile  # your profile. If you update its attributes they will be updated on Tinder.
     users = session.nearby_users() # returns a list of users nearby
 
-When you run nearby_users you will receive a list of `Hopeful` objects. 
+When you run nearby_users you will receive a list of `Hopeful` objects.
 These have the following properties: ::
 
     user = users[0]
@@ -33,7 +33,7 @@ These have the following properties: ::
     user.age # their age
     user.birth_date # their birth_date
     user.ping_time # last online
-    user.distance_km # distane from you
+    user.distance_km # distance from you
     user.common_connections # friends in common
     user.common_interests # likes in common - returns a list of {'name':NAME, 'id':ID}
     user.get_photos(width=WIDTH) # a list of photo URLS with either of these widths ["84","172","320","640"]
@@ -46,7 +46,7 @@ You may run `user.like()`, `user.superlike()` or `user.dislike()` on that user.
 
 For your list of matches, they will have a .user attribute with the same attributes as above except
 you can't dislike or like them. You can, however, see any messages exchanged
-(`match.messages`) or send them a message yourself 
+(`match.messages`) or send them a message yourself
 (`match.message("Eyyyy gurl")`).
 
 One important thing to note is that every time you run the nearby_users function, you will exhaust those users as potential matches. You may want to persist those hopefuls to a database like MongoDB or SQLite if you want to be able to like or dislike them at a later time.
@@ -60,8 +60,8 @@ To run the tests add a ``test.ini`` to the ``pynder/tests/`` folder with your
 facebook auth details::
 
     [FacebookAuth]
-    facebook_id = XXXX 
-    facebook_token = YYYY  
+    facebook_id = XXXX
+    facebook_token = YYYY
 
 And install the needed test deps::
 
