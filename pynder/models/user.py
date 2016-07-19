@@ -20,9 +20,11 @@ class User(object):
         self.photos_obj = [p for p in data['photos']]
         self.birth_date = dateutil.parser.parse(self.birth_date) if self.birth_date else None
         self.schools = []
+        self.schools_id = []
         self.jobs = []
         try:
             self.schools.extend([school["name"] for school in data['schools']])
+            self.schools_id.extend([school["id"] for school in data['schools']])
             self.jobs.extend(["%s @ %s" % (job["title"]["name"], job["company"][
                              "name"]) for job in data['jobs'] if 'title' in job and 'company' in job])
             self.jobs.extend(["%s" % (job["company"]["name"],) for job in data[
@@ -54,10 +56,9 @@ class User(object):
         return ""
 
     @property
-    def common_interests(self):
-        """Return list of common interests if _data["common_interests"] else empty list."""
-        if self._data.get("common_interests"):
-            return [p for p in self._data['common_interests']]
+    def common_likes(self):
+        if self._data.get('common_likes'):
+            return [p for p in self._data['common_likes']]
         return []
 
     @property
