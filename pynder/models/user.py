@@ -125,6 +125,13 @@ class User(object):
             return any(bool(p.search(bio)) for p in (p1, p2, p3))
         return False
 
+    @property
+    def photo_urls(self):
+        """Return a list of the urls for photos from both tinder and instagram."""
+        photos = self.photos.copy()
+        photos.extend(self.instagram_photos)
+        return photos
+
 
     def __str__(self):
         return u"{n} ({a})".format(n=self.name, a=self.age)
@@ -166,6 +173,7 @@ class User(object):
           'mentions_instagram',
           'bio',
           'photos'
+          'photo_urls'
 
         You can extend the default keys using the additional_keys parameter.
         i.e. keys.extend(additional_keys)
@@ -180,7 +188,8 @@ class User(object):
                        'mentions_snapchat',
                        'mentions_instagram',
                        'bio',
-                       'photos']
+                       'photos',
+                        'photo_urls',]
         additional_keys = additional_keys or []
         keys.extend(additional_keys)
 
